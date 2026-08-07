@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TimesTable — adaptive multiplication practice</title>
+<meta name="description" content="TimesTable is adaptive multiplication practice for tables 1–10, built to find the one fact a child hasn't trusted yet.">
+<style>
+  :root {
+    --bg: #ECEFEA;
+    --bg-raised: #F8F9F5;
+    --text: #16242B;
+    --text-muted: #4B5D63;
+    --accent: #E2A33D;
+    --accent-strong: #C9862A;
+    --accent-ink: #16242B;
+    --rule: rgba(22,36,43,0.14);
+    --grid-num: rgba(22,36,43,0.34);
+    --grid-num-faint: rgba(22,36,43,0.09);
+    --grid-header: rgba(22,36,43,0.55);
+
+    --font-display: ui-serif, Georgia, "Iowan Old Style", "Palatino Linotype", "Book Antiqua", "Times New Roman", serif;
+    --font-body: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-mono: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #101A1F;
+      --bg-raised: #17242B;
+      --text: #EAE7DB;
+      --text-muted: #9FAEB0;
+      --accent: #E7AE4E;
+      --accent-strong: #F4C46B;
+      --accent-ink: #16242B;
+      --rule: rgba(234,231,219,0.16);
+      --grid-num: rgba(234,231,219,0.32);
+      --grid-num-faint: rgba(234,231,219,0.08);
+      --grid-header: rgba(234,231,219,0.62);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #101A1F; --bg-raised: #17242B; --text: #EAE7DB; --text-muted: #9FAEB0;
+    --accent: #E7AE4E; --accent-strong: #F4C46B; --accent-ink: #16242B;
+    --rule: rgba(234,231,219,0.16); --grid-num: rgba(234,231,219,0.32);
+    --grid-num-faint: rgba(234,231,219,0.08); --grid-header: rgba(234,231,219,0.62);
+  }
+  :root[data-theme="light"] {
+    --bg: #ECEFEA; --bg-raised: #F8F9F5; --text: #16242B; --text-muted: #4B5D63;
+    --accent: #E2A33D; --accent-strong: #C9862A; --accent-ink: #16242B;
+    --rule: rgba(22,36,43,0.14); --grid-num: rgba(22,36,43,0.34);
+    --grid-num-faint: rgba(22,36,43,0.09); --grid-header: rgba(22,36,43,0.55);
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--accent-strong); outline-offset: 3px; }
+
+  .wrap {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 clamp(20px, 5vw, 56px);
+  }
+  .prose { max-width: 62ch; }
+
+  /* header */
+  header.site {
+    padding: clamp(20px, 3.5vw, 32px) 0;
+  }
+  header.site .wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .mark {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.35em;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+  }
+  .mark .x { color: var(--accent-strong); font-family: var(--font-display); font-style: italic; }
+
+  /* section rhythm */
+  section { padding: clamp(48px, 9vw, 108px) 0; position: relative; }
+  section + section { border-top: 1px solid var(--rule); }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin: 0 0 1.1em;
+  }
+
+  h1, h2, h3 { text-wrap: balance; margin: 0; }
+
+  .why h1 {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 500;
+    font-size: clamp(2rem, 5.2vw, 3.4rem);
+    line-height: 1.18;
+    letter-spacing: -0.01em;
+    max-width: 17ch;
+  }
+  .why .lede {
+    margin-top: 1.6em;
+    font-size: 1.08rem;
+    color: var(--text-muted);
+  }
+  .why-grid-field {
+    position: absolute;
+    top: -10%;
+    right: -4%;
+    width: min(46vw, 560px);
+    aspect-ratio: 1;
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    font-family: var(--font-mono);
+    font-size: clamp(0.55rem, 1vw, 0.78rem);
+    color: var(--grid-num-faint);
+    pointer-events: none;
+    z-index: 0;
+    mask-image: radial-gradient(circle at 70% 30%, black 40%, transparent 75%);
+    -webkit-mask-image: radial-gradient(circle at 70% 30%, black 40%, transparent 75%);
+  }
+  .why-grid-field span { display: flex; align-items: center; justify-content: center; font-variant-numeric: tabular-nums; }
+  .why .inner { position: relative; z-index: 1; }
+
+  h2.section-title {
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: clamp(1.5rem, 3.2vw, 2.15rem);
+    line-height: 1.28;
+    letter-spacing: -0.01em;
+    max-width: 22ch;
+  }
+  .section-body {
+    margin-top: 1.4em;
+    color: var(--text-muted);
+    font-size: 1.02rem;
+  }
+
+  /* how / grid demo */
+  .how-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(32px, 5vw, 64px);
+    align-items: start;
+    margin-top: clamp(36px, 5vw, 56px);
+  }
+  @media (max-width: 860px) {
+    .how-layout { grid-template-columns: 1fr; }
+  }
+
+  .grid-panel {
+    background: var(--bg-raised);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    padding: clamp(14px, 2.4vw, 22px);
+  }
+  .grid-scroll { overflow-x: auto; }
+  #times-grid {
+    display: grid;
+    grid-template-columns: repeat(11, minmax(30px, 1fr));
+    grid-template-rows: repeat(11, minmax(30px, 1fr));
+    min-width: 380px;
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    font-size: clamp(0.72rem, 1.6vw, 0.86rem);
+    user-select: none;
+  }
+  #times-grid .cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    color: var(--grid-num);
+    transition: background-color 0.12s ease, color 0.12s ease;
+  }
+  #times-grid .corner { color: var(--grid-header); }
+  #times-grid .head { color: var(--grid-header); font-weight: 600; }
+  #times-grid .cell.row-h, #times-grid .cell.col-h { background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--text); }
+  #times-grid .cell.active { background: var(--accent); color: var(--accent-ink); font-weight: 700; }
+
+  .grid-caption {
+    margin-top: 16px;
+    font-size: 0.92rem;
+    color: var(--text-muted);
+  }
+  .grid-caption strong { color: var(--text); font-weight: 600; }
+  .grid-caption .stat { font-family: var(--font-mono); color: var(--text); }
+
+  /* what / features */
+  .what-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    gap: clamp(32px, 5vw, 72px);
+    margin-top: clamp(32px, 5vw, 48px);
+  }
+  @media (max-width: 860px) {
+    .what-layout { grid-template-columns: 1fr; }
+  }
+  .features { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 22px; }
+  .features li { display: flex; gap: 14px; align-items: flex-start; }
+  .features .glyph {
+    font-family: var(--font-display);
+    font-style: italic;
+    color: var(--accent-strong);
+    font-size: 1.2rem;
+    line-height: 1.5;
+    flex: none;
+    width: 1em;
+  }
+  .features .txt { color: var(--text-muted); }
+  .features .txt b { color: var(--text); font-weight: 600; }
+
+  .product-name {
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    padding: 18px;
+    background: var(--bg-raised);
+  }
+  .product-name .row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dashed var(--rule); }
+  .product-name .row:last-child { border-bottom: none; }
+  .product-name .k { color: var(--text-muted); }
+  .product-name .v { color: var(--text); text-align: right; }
+
+  /* cta */
+  .cta { text-align: left; }
+  .cta h2 { font-family: var(--font-display); font-style: italic; font-weight: 500; font-size: clamp(1.6rem, 3.4vw, 2.3rem); max-width: 20ch; }
+  .cta p { margin-top: 1em; color: var(--text-muted); max-width: 52ch; }
+  .cta-row { margin-top: 1.8em; display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    background: var(--accent);
+    color: var(--accent-ink);
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 0.95rem;
+    text-decoration: none;
+    padding: 0.85em 1.4em;
+    border-radius: 3px;
+    transition: background-color 0.15s ease, transform 0.1s ease;
+  }
+  .btn:hover { background: var(--accent-strong); }
+  .btn:active { transform: translateY(1px); }
+  .cta-email { font-family: var(--font-mono); font-size: 0.88rem; color: var(--text-muted); text-decoration: none; border-bottom: 1px solid var(--rule); }
+  .cta-email:hover { color: var(--accent-strong); border-color: var(--accent-strong); }
+
+  footer {
+    padding: 28px 0 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  footer .tag { font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-muted); }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site">
+  <div class="wrap">
+    <a class="mark" href="#top"><span class="x">×</span>TimesTable</a>
+  </div>
+</header>
+
+<main id="top">
+
+  <section class="why">
+    <div class="why-grid-field" id="why-field" aria-hidden="true"></div>
+    <div class="wrap inner">
+      <p class="eyebrow">The belief</p>
+      <h1>Every kid who freezes at 7&nbsp;×&nbsp;8 already knows it — they just don't trust their own answer yet.</h1>
+      <p class="lede prose">Confidence breaks the same way it's built: one answer at a time. A single wrong guess, called out in front of the class, is enough to convince a child they're "bad at math" — even when they already know most of their tables cold. Getting that trust back doesn't take more drilling. It takes practice that meets them exactly where the doubt is, and quietly lets them prove themselves right, again and again.</p>
+    </div>
+  </section>
+
+  <section class="how">
+    <div class="wrap">
+      <p class="eyebrow">The method</p>
+      <h2 class="section-title">Every attempt is timed and scored per fact, not per session — so practice can chase the one number that's still shaky.</h2>
+      <div class="how-layout">
+        <div class="section-body">
+          <p>Most flashcard apps drill the whole times table evenly. TimesTable tracks accuracy and response time separately for each of the 100 facts from 1×1 to 10×10, and quietly re-weights what comes up next: shakier facts appear more often and in easier formats, solid ones fade into occasional review, and the question format itself — straight recall, word problem, missing factor — shifts with how a child is actually doing.</p>
+          <p>Hover the grid to see how any fact can become today's focus.</p>
+        </div>
+        <div class="grid-panel">
+          <div class="grid-scroll">
+            <div id="times-grid" role="img" aria-label="A 10 by 10 multiplication table with 7 times 8 highlighted as today's focus fact"></div>
+          </div>
+          <p class="grid-caption">Right now the model is watching <strong>7 × 8</strong> — <span class="stat">3</span> correct, but still <span class="stat">1.8s</span> slower than the rest of the sevens. Next question: the same fact, as a word problem.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="what">
+    <div class="wrap">
+      <p class="eyebrow">The product</p>
+      <h2 class="section-title">TimesTable — adaptive multiplication practice for tables 1–10.</h2>
+      <div class="what-layout">
+        <ul class="features">
+          <li><span class="glyph">×</span><span class="txt"><b>Adapts automatically, fact by fact</b> — no settings to configure, no difficulty level to guess.</span></li>
+          <li><span class="glyph">×</span><span class="txt"><b>Runs on your own computer.</b> A child's practice data never leaves the machine.</span></li>
+          <li><span class="glyph">×</span><span class="txt"><b>Optional Hebrew hints and session summaries</b> when a child gets stuck — falls back to built-in guidance without them.</span></li>
+          <li><span class="glyph">×</span><span class="txt"><b>One quick profile per child.</b> A username, no password, nothing to lose.</span></li>
+        </ul>
+        <div class="product-name">
+          <div class="row"><span class="k">tables</span><span class="v">1–10</span></div>
+          <div class="row"><span class="k">tracks</span><span class="v">accuracy · latency</span></div>
+          <div class="row"><span class="k">data</span><span class="v">local, per profile</span></div>
+          <div class="row"><span class="k">hints</span><span class="v">Hebrew, optional</span></div>
+          <div class="row"><span class="k">built with</span><span class="v">Streamlit</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta">
+    <div class="wrap">
+      <p class="eyebrow">Not open yet</p>
+      <h2>It's not ready to buy — but it will be soon.</h2>
+      <p>I'm finishing the details before TimesTable is ready to buy. Leave your email and I'll write to you once, when it's live — not before.</p>
+      <div class="cta-row">
+        <a class="btn" href="mailto:gilz1407@gmail.com?subject=TimesTable%20launch">Email me when it's ready</a>
+        <a class="cta-email" href="mailto:gilz1407@gmail.com">gilz1407@gmail.com</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap" style="display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;">
+    <a class="mark" href="#top"><span class="x">×</span>TimesTable</a>
+    <span class="tag">built for the moment it clicks · © 2026</span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var SIZE = 10;
+
+  // faint decorative field behind the hero
+  var field = document.getElementById('why-field');
+  var ffrag = document.createDocumentFragment();
+  for (var r = 1; r <= SIZE; r++) {
+    for (var c = 1; c <= SIZE; c++) {
+      var s = document.createElement('span');
+      s.textContent = r * c;
+      ffrag.appendChild(s);
+    }
+  }
+  field.appendChild(ffrag);
+
+  // interactive times table
+  var grid = document.getElementById('times-grid');
+  var frag = document.createDocumentFragment();
+  var cells = [];
+
+  var corner = document.createElement('div');
+  corner.className = 'cell corner';
+  corner.textContent = '×';
+  frag.appendChild(corner);
+
+  for (var c = 1; c <= SIZE; c++) {
+    var h = document.createElement('div');
+    h.className = 'cell head';
+    h.textContent = c;
+    h.dataset.col = c;
+    frag.appendChild(h);
+  }
+
+  for (var r = 1; r <= SIZE; r++) {
+    var rh = document.createElement('div');
+    rh.className = 'cell head';
+    rh.textContent = r;
+    rh.dataset.row = r;
+    frag.appendChild(rh);
+
+    for (var c = 1; c <= SIZE; c++) {
+      var cell = document.createElement('div');
+      cell.className = 'cell';
+      cell.textContent = r * c;
+      cell.dataset.row = r;
+      cell.dataset.col = c;
+      frag.appendChild(cell);
+      cells.push(cell);
+    }
+  }
+  grid.appendChild(frag);
+
+  function highlight(row, col) {
+    var all = grid.querySelectorAll('.cell');
+    for (var i = 0; i < all.length; i++) {
+      var el = all[i];
+      var isRow = el.dataset.row == row;
+      var isCol = el.dataset.col == col;
+      el.classList.toggle('row-h', isRow && !el.classList.contains('corner'));
+      el.classList.toggle('col-h', isCol && !el.classList.contains('corner'));
+      el.classList.toggle('active', isRow && isCol && el.dataset.row && el.dataset.col && !el.classList.contains('head'));
+    }
+  }
+
+  highlight(7, 8);
+
+  cells.forEach(function (cell) {
+    cell.addEventListener('mouseenter', function () {
+      highlight(cell.dataset.row, cell.dataset.col);
+    });
+  });
+  grid.addEventListener('mouseleave', function () {
+    highlight(7, 8);
+  });
+})();
+</script>
+
+</body>
+</html>
