@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="he" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TimesTable — adaptive multiplication practice</title>
-<meta name="description" content="TimesTable is adaptive multiplication practice for tables 1–10, built to find the one fact a child hasn't trusted yet.">
+<title>TimesTable — תרגול לוח הכפל בקצב אישי</title>
+<meta name="description" content="TimesTable הוא תרגול כפל אדפטיבי ללוחות הכפל 1–10, שנבנה כדי למצוא את העובדה היחידה שהילדים עדיין לא בטוחים בה.">
 <style>
   :root {
     --bg: #ECEFEA;
@@ -125,7 +125,7 @@
   .why-grid-field {
     position: absolute;
     top: -10%;
-    right: -4%;
+    left: -4%;
     width: min(46vw, 560px);
     aspect-ratio: 1;
     display: grid;
@@ -135,8 +135,8 @@
     color: var(--grid-num-faint);
     pointer-events: none;
     z-index: 0;
-    mask-image: radial-gradient(circle at 70% 30%, black 40%, transparent 75%);
-    -webkit-mask-image: radial-gradient(circle at 70% 30%, black 40%, transparent 75%);
+    mask-image: radial-gradient(circle at 30% 30%, black 40%, transparent 75%);
+    -webkit-mask-image: radial-gradient(circle at 30% 30%, black 40%, transparent 75%);
   }
   .why-grid-field span { display: flex; align-items: center; justify-content: center; font-variant-numeric: tabular-nums; }
   .why .inner { position: relative; z-index: 1; }
@@ -164,7 +164,7 @@
     margin-top: clamp(36px, 5vw, 56px);
   }
   @media (max-width: 860px) {
-    .how-layout { grid-template-columns: 1fr; }
+    .how-layout { grid-template-columns: minmax(0, 1fr); }
   }
 
   .grid-panel {
@@ -206,6 +206,40 @@
   .grid-caption strong { color: var(--text); font-weight: 600; }
   .grid-caption .stat { font-family: var(--font-mono); color: var(--text); }
 
+  /* screens / product proof */
+  .shot-frame {
+    background: var(--bg-raised);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(22,36,43,0.06);
+  }
+  .shot-frame .chrome {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .shot-frame .chrome span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--rule);
+  }
+  .shot-frame img { display: block; width: 100%; height: auto; }
+  .screens-hero { margin-top: clamp(32px, 5vw, 48px); }
+  .screens-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    gap: clamp(32px, 5vw, 64px);
+    align-items: center;
+    margin-top: clamp(40px, 6vw, 64px);
+  }
+  @media (max-width: 860px) {
+    .screens-layout { grid-template-columns: minmax(0, 1fr); }
+  }
+
   /* what / features */
   .what-layout {
     display: grid;
@@ -214,7 +248,7 @@
     margin-top: clamp(32px, 5vw, 48px);
   }
   @media (max-width: 860px) {
-    .what-layout { grid-template-columns: 1fr; }
+    .what-layout { grid-template-columns: minmax(0, 1fr); }
   }
   .features { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 22px; }
   .features li { display: flex; gap: 14px; align-items: flex-start; }
@@ -242,10 +276,10 @@
   .product-name .row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px dashed var(--rule); }
   .product-name .row:last-child { border-bottom: none; }
   .product-name .k { color: var(--text-muted); }
-  .product-name .v { color: var(--text); text-align: right; }
+  .product-name .v { color: var(--text); text-align: left; }
 
   /* cta */
-  .cta { text-align: left; }
+  .cta { text-align: right; }
   .cta h2 { font-family: var(--font-display); font-style: italic; font-weight: 500; font-size: clamp(1.6rem, 3.4vw, 2.3rem); max-width: 20ch; }
   .cta p { margin-top: 1em; color: var(--text-muted); max-width: 52ch; }
   .cta-row { margin-top: 1.8em; display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
@@ -287,35 +321,58 @@
 
 <header class="site">
   <div class="wrap">
-    <a class="mark" href="#top"><span class="x">×</span>TimesTable</a>
+    <a class="mark" dir="ltr" href="#top"><span class="x">×</span>TimesTable</a>
   </div>
 </header>
 
 <main id="top">
 
   <section class="why">
-    <div class="why-grid-field" id="why-field" aria-hidden="true"></div>
+    <div class="why-grid-field" id="why-field" dir="ltr" aria-hidden="true"></div>
     <div class="wrap inner">
-      <p class="eyebrow">The belief</p>
-      <h1>Every kid who freezes at 7&nbsp;×&nbsp;8 already knows it — they just don't trust their own answer yet.</h1>
-      <p class="lede prose">Confidence breaks the same way it's built: one answer at a time. A single wrong guess, called out in front of the class, is enough to convince a child they're "bad at math" — even when they already know most of their tables cold. Getting that trust back doesn't take more drilling. It takes practice that meets them exactly where the doubt is, and quietly lets them prove themselves right, again and again.</p>
+      <p class="eyebrow">האמונה שלנו</p>
+      <h1>ילדים שנתקעים ב-7&nbsp;×&nbsp;8 כבר יודעים את התשובה — הם רק עוד לא בוטחים בעצמם.</h1>
+      <p class="lede prose">ביטחון נשבר בדיוק כמו שהוא נבנה: תשובה אחת בכל פעם. ניחוש שגוי אחד, שנאמר בקול מול הכיתה, מספיק כדי לשכנע ילד שהוא "לא טוב במתמטיקה" — גם כשהוא כבר שולט ברוב לוח הכפל בעל פה. כדי להחזיר את הביטחון הזה לא צריך עוד תרגול מכני. צריך תרגול שפוגש את הילד בדיוק במקום שבו הספק מתעורר, ומאפשר לו בשקט להוכיח לעצמו שוב ושוב שהוא צודק.</p>
     </div>
   </section>
 
   <section class="how">
     <div class="wrap">
-      <p class="eyebrow">The method</p>
-      <h2 class="section-title">Every attempt is timed and scored per fact, not per session — so practice can chase the one number that's still shaky.</h2>
+      <p class="eyebrow">השיטה</p>
+      <h2 class="section-title">כל ניסיון נמדד בזמן ומדורג לפי עובדה בודדת, לא לפי כל התרגול — כך שהתרגול יכול להתמקד במספר הבודד שעדיין רועד.</h2>
       <div class="how-layout">
         <div class="section-body">
-          <p>Most flashcard apps drill the whole times table evenly. TimesTable tracks accuracy and response time separately for each of the 100 facts from 1×1 to 10×10, and quietly re-weights what comes up next: shakier facts appear more often and in easier formats, solid ones fade into occasional review, and the question format itself — straight recall, word problem, missing factor — shifts with how a child is actually doing.</p>
-          <p>Hover the grid to see how any fact can become today's focus.</p>
+          <p>רוב אפליקציות הכרטיסיות מתרגלות את כל לוח הכפל באופן שווה. TimesTable עוקבת אחרי הדיוק וזמן התגובה בנפרד עבור כל אחת מ-100 העובדות מ-1×1 עד 10×10, ומשנה בשקט מה יופיע הלאה: עובדות רעועות מופיעות לעיתים קרובות יותר ובפורמטים קלים יותר, עובדות יציבות עוברות לחזרה מדי פעם בלבד, וגם צורת השאלה עצמה — שינון ישיר, בעיית מילים, גורם חסר — משתנה בהתאם לביצועים בפועל של הילד.</p>
+          <p>העבירו את העכבר מעל הטבלה כדי לראות איך כל עובדה יכולה להפוך למוקד של היום.</p>
         </div>
         <div class="grid-panel">
           <div class="grid-scroll">
-            <div id="times-grid" role="img" aria-label="A 10 by 10 multiplication table with 7 times 8 highlighted as today's focus fact"></div>
+            <div id="times-grid" dir="ltr" role="img" aria-label="לוח כפל בגודל 10 על 10, כאשר 7 כפול 8 מסומנת כעובדת המיקוד של היום"></div>
           </div>
-          <p class="grid-caption">Right now the model is watching <strong>7 × 8</strong> — <span class="stat">3</span> correct, but still <span class="stat">1.8s</span> slower than the rest of the sevens. Next question: the same fact, as a word problem.</p>
+          <p class="grid-caption">כרגע המודל עוקב אחרי <strong>7 × 8</strong> — <span class="stat">3</span> תשובות נכונות, אך עדיין <span class="stat">1.8 שניות</span> איטי יותר משאר עובדות השבע. השאלה הבאה: אותה עובדה, כבעיית מילים.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="screens">
+    <div class="wrap">
+      <p class="eyebrow">בתוך האפליקציה</p>
+      <h2 class="section-title">ככה זה נראה מהצד של הילד — שאלה, תשובה, וחיזוק מיידי.</h2>
+
+      <div class="screens-hero shot-frame">
+        <div class="chrome" aria-hidden="true"><span></span><span></span><span></span></div>
+        <img src="images/app-question.png" loading="lazy" alt="צילום מסך של אפליקציית TimesTable: השאלה 8 כפול 5, שדה להזנת תשובה, וסרגל צד עם פרופיל, התקדמות והגדרות תרגול.">
+      </div>
+      <p class="grid-caption">מסך התרגול המלא: השאלה הנוכחית, קצב התשובות, והלוח שנבחר לתרגול בסרגל הצד.</p>
+
+      <div class="screens-layout">
+        <div class="section-body">
+          <p>כל תשובה נבדקת באותו רגע. תשובה נכונה מקבלת חיזוק חיובי מיידי — לא רק סימן וי, אלא רגע קטן של הצלחה שהילד ירצה לחוות שוב.</p>
+        </div>
+        <div class="shot-frame">
+          <div class="chrome" aria-hidden="true"><span></span><span></span><span></span></div>
+          <img src="images/app-correct.png" loading="lazy" alt="אותה שאלה מיד לאחר תשובה נכונה, עם הודעת חיזוק 'מעולה! תשובה נכונה!'">
         </div>
       </div>
     </div>
@@ -323,21 +380,21 @@
 
   <section class="what">
     <div class="wrap">
-      <p class="eyebrow">The product</p>
-      <h2 class="section-title">TimesTable — adaptive multiplication practice for tables 1–10.</h2>
+      <p class="eyebrow">המוצר</p>
+      <h2 class="section-title">TimesTable — תרגול כפל אדפטיבי ללוחות הכפל 1–10.</h2>
       <div class="what-layout">
         <ul class="features">
-          <li><span class="glyph">×</span><span class="txt"><b>Adapts automatically, fact by fact</b> — no settings to configure, no difficulty level to guess.</span></li>
-          <li><span class="glyph">×</span><span class="txt"><b>Runs on your own computer.</b> A child's practice data never leaves the machine.</span></li>
-          <li><span class="glyph">×</span><span class="txt"><b>Optional Hebrew hints and session summaries</b> when a child gets stuck — falls back to built-in guidance without them.</span></li>
-          <li><span class="glyph">×</span><span class="txt"><b>One quick profile per child.</b> A username, no password, nothing to lose.</span></li>
+          <li><span class="glyph">×</span><span class="txt"><b>מתאימה את עצמה אוטומטית, עובדה אחר עובדה</b> — בלי הגדרות לקבוע, בלי רמת קושי לנחש.</span></li>
+          <li><span class="glyph">×</span><span class="txt"><b>רצה על המחשב שלכם.</b> נתוני התרגול של הילד לעולם לא יוצאים מהמכשיר.</span></li>
+          <li><span class="glyph">×</span><span class="txt"><b>רמזים ותקצירי מפגש בעברית, אופציונליים,</b> כשילד נתקע — וכשלא, האפליקציה חוזרת להנחיה המובנית שלה.</span></li>
+          <li><span class="glyph">×</span><span class="txt"><b>פרופיל מהיר לכל ילד.</b> שם משתמש בלבד, בלי סיסמה, בלי מה להפסיד.</span></li>
         </ul>
         <div class="product-name">
-          <div class="row"><span class="k">tables</span><span class="v">1–10</span></div>
-          <div class="row"><span class="k">tracks</span><span class="v">accuracy · latency</span></div>
-          <div class="row"><span class="k">data</span><span class="v">local, per profile</span></div>
-          <div class="row"><span class="k">hints</span><span class="v">Hebrew, optional</span></div>
-          <div class="row"><span class="k">built with</span><span class="v">Streamlit</span></div>
+          <div class="row"><span class="k">לוחות</span><span class="v" dir="ltr">1–10</span></div>
+          <div class="row"><span class="k">מודדת</span><span class="v">דיוק · זמן תגובה</span></div>
+          <div class="row"><span class="k">נתונים</span><span class="v">מקומיים, לפי פרופיל</span></div>
+          <div class="row"><span class="k">רמזים</span><span class="v">בעברית, אופציונלי</span></div>
+          <div class="row"><span class="k">נבנה עם</span><span class="v">Streamlit</span></div>
         </div>
       </div>
     </div>
@@ -345,11 +402,11 @@
 
   <section class="cta">
     <div class="wrap">
-      <p class="eyebrow">Get started</p>
-      <h2>₪30/month. Cancel anytime.</h2>
-      <p>Instant download for Windows and Mac. Your child's practice data stays on your own computer — the subscription only unlocks the app.</p>
+      <p class="eyebrow">להתחלה</p>
+      <h2>30 ₪ לחודש. ביטול בכל עת.</h2>
+      <p>הורדה מיידית ל-Windows ול-Mac. נתוני התרגול של הילד נשארים על המחשב שלכם — המנוי רק פותח את הגישה לאפליקציה.</p>
       <div class="cta-row">
-        <a class="btn" href="https://adaptive-learning.lemonsqueezy.com/checkout/buy/d6a04b38-6a9e-4faf-bfb3-2f8097e041dc">Start now — ₪30/month</a>
+        <a class="btn" href="https://adaptive-learning.lemonsqueezy.com/checkout/buy/d6a04b38-6a9e-4faf-bfb3-2f8097e041dc">התחילו עכשיו — 30 ₪ לחודש</a>
         <a class="cta-email" href="mailto:gilz1407@gmail.com">gilz1407@gmail.com</a>
       </div>
     </div>
@@ -359,8 +416,8 @@
 
 <footer>
   <div class="wrap" style="display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;">
-    <a class="mark" href="#top"><span class="x">×</span>TimesTable</a>
-    <span class="tag">built for the moment it clicks · © 2026</span>
+    <a class="mark" dir="ltr" href="#top"><span class="x">×</span>TimesTable</a>
+    <span class="tag">נבנה לרגע שבו זה נדלק · © 2026</span>
   </div>
 </footer>
 
